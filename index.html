@@ -14,7 +14,7 @@ body{font-family: Verdana,sans-serif;}
 	background:#fff;
 	text-align:center;
 }
-#clock div{
+#clock .num{
 	width:50px;
 	height:50px;
 	border:1px solid #888;
@@ -24,7 +24,6 @@ body{font-family: Verdana,sans-serif;}
     font: 30px/45px Verdana, sans-serif;
 	text-align:center;
 	color:#666;
-	zline-height:55px;
 	margin:0;
 }
 #num1 {left:300px;top:10px;}
@@ -51,26 +50,28 @@ body{font-family: Verdana,sans-serif;}
 	height:80px;
 	font-size:60px;
 	color:#888;
-}
-#clock #center input{
-    border: 0px solid;
-    border-radius: 52px;
-    color: #888;
-    font-size: 50px;
-    padding: 0;
-    text-align: center;
-    width: 57px;
+	border:3px dotted #bbb;
 }
 
-#links{float:right;zposition:absolute;zleft: 500px;list-style-type: none;font-size:20px;}
+#links{float:right;margin-right:50px;list-style-type: none;font-size:20px;}
 #links li{margin-bottom:10px;}
 #links a{text-decoration:none;display:block;width:60px;padding:0px 13px}
 #links a:hover{background:#eee}
 #links a:visited{color:blue}
 
-#timer{font-size: 30px; color:#ccc;float:right;zposition:absolute;left: 660px;padding:20px;background:#999;text-align:center;border-radius:30px;border:6px double #fff}
-#timer a{ margin: 0 5px; color: white;font-size:50px;text-decoration:none;}
-#timer .time{font-size: 50px; margin: 20px;color:white}
+#timer_wrap{float:right;}
+#timer {font-size: 30px; color:#ccc;padding:20px;
+	background:#999;text-align:center;border-radius:90px;border:6px double #fff;
+}
+#timer a{ margin: 0 5px; color: white;font-size:50px;text-decoration:none;
+text-shadow: #aaa 3px 3px 3px;}
+#timer .time{font-size: 50px; line-height:45px;padding:5px; margin: 20px;color:white; border:1px solid white;border-radius:10px;}
+#button{border-top: 20px solid #999;
+	border-left: 5px solid transparent;
+	border-right: 5px solid transparent;
+	height: 0;
+	width: 15px;
+	margin:0 auto;}
 
 </style>
 <body>
@@ -89,13 +90,16 @@ body{font-family: Verdana,sans-serif;}
 <li><a href="#10">&#10139; 10</a></li>
 </ul>
 
-<div id="timer">
-	<div>Chrono</div>
-	<a href="#" class="start" title="start">&#9654;</a>
-	<a href="#" class="stop" title="stop">&#9632;</a>
-	<!-- <a href="#" class="pause" title="pause">&#9705;</a> -->
-	<a href="#" class="reset" title="reset">&#8634;</a>
-	<div class="time"></div>
+<div id="timer_wrap">
+	<div id="button"></div>
+	<div id="timer">
+		<div>Chrono</div>
+		<a href="#" class="start" title="start">&#9654;</a>
+		<a href="#" class="stop" title="stop">&#9632;</a>
+		<!-- <a href="#" class="pause" title="pause">&#9705;</a> -->
+		<a href="#" class="reset" title="reset">&#8634;</a>
+		<div class="time">00</div>
+	</div>
 </div>
 
 <div id="wrap">
@@ -137,9 +141,7 @@ function init(){
 
 
 function placedivs(){
-	var elems = document.getElementsByClassName('num');
-	console.log( elems );
-
+	var elems = $('div.num');
 	var increase = Math.PI * 2 / elems.length;
 	var x = 0, y = 0, angle = 0;
 	
@@ -148,39 +150,36 @@ function placedivs(){
 	var c_t = $('#clock').position().top;
 	var c_l = $('#clock').position().left;
 	var c_b = parseInt( $('#clock').css('border-left-width') );
-	
+	// Get numbers & center div width & height
 	var num_w = $('#num1').width();
 	var num_h = $('#num1').height();
 	var center_w = $('#center').width();
 	var center_h = $('#center').height();
 
+	// Position divs on #clock
 	for (var i = 0; i < elems.length; i++) {
 		var elem = elems[i];
-		// modify to change the radius and position of a circle
 		x = parseInt( c_w / 2 ) * Math.cos(angle) + parseInt( c_l + c_w / 2 + c_b - num_w / 2 );
 		y = parseInt( c_w / 2 ) * Math.sin(angle) + parseInt( c_t + c_w / 2 + c_b - num_h / 2 );
-		elem.style.position = 'absolute';
-		elem.style.left = x + 'px';
-		elem.style.top = y + 'px';
+		$(elem).css( {position:'absolute', left:x+'px', top:y+'px'} );
 		angle += increase;
 	}
 	
 	// Place #center
-	$('#center').css('top', parseInt( c_w / 2 + c_t / 2 - 2*c_b - center_w ) + 'px' );
-	$('#center').css('left', parseInt( c_w / 2 + c_l / 2 - c_b / 2 - center_h / 2) + 'px' );
-	$('#center').css('margin-top', parseInt( c_w / 2 - center_h / 2 ) + 'px' );
-	$('#center').css('margin-left', parseInt( c_w / 2 - center_w / 2 ) + 'px' );
+	$('#center').css( {
+		top:  parseInt( c_w / 2 + c_t / 2 - 2*c_b - center_w ) + 'px',
+		left: parseInt( c_w / 2 + c_l / 2 - c_b / 2 - center_h / 2) + 'px',
+		'margin-top':  parseInt( c_w / 2 - center_h / 2 ) + 'px',
+		'margin-left': parseInt( c_w / 2 - center_w / 2 ) + 'px'
+	} );
 
 }
 
+// Shuffle array
 function shuffle(o){ //v1.0
     for(var j, x, i = o.length; i; j = parseInt(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
     return o;
 };
-
-$('#links a').click(function(){
-	setTimeout(function(){ init(); }, 100);
-});
 
 function flashdiv( div, timer ){
 	var bg = $(div).css('backgroundColor');
@@ -188,12 +187,16 @@ function flashdiv( div, timer ){
 	setTimeout(	function(){ $(div).css('backgroundColor',bg) }, timer );
 }
 
+
+$('#links a').click(function(){
+	setTimeout(function(){ init(); }, 100);
+});
+
 init();
 placedivs();
 
 /* chrono */
 
-var startValue = 0; //Number of milliseconds
 var time = 0;
 var interv;
 
@@ -201,16 +204,16 @@ $(function(){
     displayTime();
     $(".start").on("click", function(){
 		interv = setInterval(function(){
-			time = time + 1;
+			time = parseFloat( time + 0.1 );
 			displayTime();
-		}, 1000);
-		$(".start").css('color', '#faa');
+		}, 100);
+		$(".start").css('textShadow', '#ffa 3px 3px 10px');
 		return false;
     });
     $(".stop").on("click", function(){
         clearInterval(interv);
         displayTime();
-		$(".start").css('color', '#fff');
+		$(".start").css('textShadow', '#aaa 3px 3px 3px');
 		return false;
     });
     $(".pause").on("click", function(){
@@ -220,13 +223,23 @@ $(function(){
     $(".reset").on("click", function(){
         time = 0;
         displayTime();
-		$(".start").css('color', '#fff');
+		$(".start").css('textShadow', '#aaa 3px 3px 3px');
 		return false;
     });
 });
 
 function displayTime( ){
-    $(".time").text(fillZeroes(time));
+	var color;
+	if( time <= 10 & time > 0 ) {
+		color = "green";
+	} else if( time > 30 ) {
+		color = "red";
+	} else if ( time == 0 ) {
+		color = "inherit";
+	} else {
+		color = "orange";
+	}
+    $(".time").text( parseFloat( Math.round( time * 10 ) / 10 ).toFixed(1) ).css( 'color', color );
 }
 
 function fillZeroes(t){
