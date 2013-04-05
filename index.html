@@ -1,0 +1,245 @@
+<html>
+<head>
+<title>TABLE</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+<style>
+body{font-family: Verdana,sans-serif;}
+#wrap {margin-top:60px;margin-left:60px;}
+#clock {
+	width:350px;
+	height:350px;
+	border-radius:300px;
+	border:3px solid #888;
+	padding:0;
+	background:#fff;
+	text-align:center;
+}
+#clock div{
+	width:50px;
+	height:50px;
+	border:1px solid #888;
+	position:relative;
+	background:#fff;
+	border-radius:40px;
+    font: 30px/45px Verdana, sans-serif;
+	text-align:center;
+	color:#666;
+	zline-height:55px;
+	margin:0;
+}
+#num1 {left:300px;top:10px;}
+#num2 {left:360px;top:50px;}
+#num3 {left:380px;top:100px;}
+#num4 {left:340px;top:160px;}
+#num5 {left:273px;top:190px;}
+#num6 {left:180px;top:180px;}
+#num7 {left:90px;top:110px;}
+#num8 {left:10px;top:-8px;}
+#num9 {left:-16px;top:-152px;}
+#num10{left:0px;top:-286px;}
+#num11{left:65px;top:-410px;}
+#num0{left:180px;top:-487px;}
+#clock #center {
+	display:block;
+	background:white;
+	border-radius:90px;
+	margin-left:95px;
+	left:50%;
+	margin-top:95px;
+	top:50%;
+	width:80px;
+	height:80px;
+	font-size:60px;
+	color:#888;
+}
+#clock #center input{
+    border: 0px solid;
+    border-radius: 52px;
+    color: #888;
+    font-size: 50px;
+    padding: 0;
+    text-align: center;
+    width: 57px;
+}
+
+#links{float:right;zposition:absolute;zleft: 500px;list-style-type: none;font-size:20px;}
+#links li{margin-bottom:10px;}
+#links a{text-decoration:none;display:block;width:60px;padding:0px 13px}
+#links a:hover{background:#eee}
+#links a:visited{color:blue}
+
+#timer{font-size: 30px; color:#ccc;float:right;zposition:absolute;left: 660px;padding:20px;background:#999;text-align:center;border-radius:30px;border:6px double #fff}
+#timer a{ margin: 0 5px; color: white;font-size:50px;text-decoration:none;}
+#timer .time{font-size: 50px; margin: 20px;color:white}
+
+</style>
+<body>
+
+<ul id="links">
+<li>Tables:</li>
+<li><a href="#1">&#10139; 1</a></li>
+<li><a href="#2">&#10139; 2</a></li>
+<li><a href="#3">&#10139; 3</a></li>
+<li><a href="#4">&#10139; 4</a></li>
+<li><a href="#5">&#10139; 5</a></li>
+<li><a href="#6">&#10139; 6</a></li>
+<li><a href="#7">&#10139; 7</a></li>
+<li><a href="#8">&#10139; 8</a></li>
+<li><a href="#9">&#10139; 9</a></li>
+<li><a href="#10">&#10139; 10</a></li>
+</ul>
+
+<div id="timer">
+	<div>Chrono</div>
+	<a href="#" class="start" title="start">&#9654;</a>
+	<a href="#" class="stop" title="stop">&#9632;</a>
+	<!-- <a href="#" class="pause" title="pause">&#9705;</a> -->
+	<a href="#" class="reset" title="reset">&#8634;</a>
+	<div class="time"></div>
+</div>
+
+<div id="wrap">
+
+	<div id="clock">
+
+		<div id="num1" class="num">1</div>
+		<div id="num2" class="num">2</div>
+		<div id="num3" class="num">3</div>
+		<div id="num4" class="num">4</div>
+		<div id="num5" class="num">5</div>
+		<div id="num6" class="num">6</div>
+		<div id="num7" class="num">7</div>
+		<div id="num8" class="num">8</div>
+		<div id="num9" class="num">9</div>
+		<div id="num10" class="num">10</div>
+		<div id="num11" class="num">11</div>
+		<div id="num0" class="num">0</div>
+
+		<span id="center">1</span>
+
+		
+	</div>
+
+</div>
+
+
+<script>
+function init(){
+	var nums = shuffle( [0,1,2,3,4,5,6,7,8,9,10,11] );
+	for (var i=0;i<nums.length;i++){
+		$('#num'+i).html( nums[i] );
+		flashdiv( '#num'+i, 600+50*i );
+	}
+	if(window.location.hash){
+		$('#center').html( window.location.hash.replace('#','') );
+	}
+}
+
+
+function placedivs(){
+	var elems = document.getElementsByClassName('num');
+	console.log( elems );
+
+	var increase = Math.PI * 2 / elems.length;
+	var x = 0, y = 0, angle = 0;
+	
+	// Get clock width, top, left, border
+	var c_w = $('#clock').css('width').replace('px', '');
+	var c_t = $('#clock').position().top;
+	var c_l = $('#clock').position().left;
+	var c_b = parseInt( $('#clock').css('border-left-width') );
+	
+	var num_w = $('#num1').width();
+	var num_h = $('#num1').height();
+	var center_w = $('#center').width();
+	var center_h = $('#center').height();
+
+	for (var i = 0; i < elems.length; i++) {
+		var elem = elems[i];
+		// modify to change the radius and position of a circle
+		x = parseInt( c_w / 2 ) * Math.cos(angle) + parseInt( c_l + c_w / 2 + c_b - num_w / 2 );
+		y = parseInt( c_w / 2 ) * Math.sin(angle) + parseInt( c_t + c_w / 2 + c_b - num_h / 2 );
+		elem.style.position = 'absolute';
+		elem.style.left = x + 'px';
+		elem.style.top = y + 'px';
+		angle += increase;
+	}
+	
+	// Place #center
+	$('#center').css('top', parseInt( c_w / 2 + c_t / 2 - 2*c_b - center_w ) + 'px' );
+	$('#center').css('left', parseInt( c_w / 2 + c_l / 2 - c_b / 2 - center_h / 2) + 'px' );
+	$('#center').css('margin-top', parseInt( c_w / 2 - center_h / 2 ) + 'px' );
+	$('#center').css('margin-left', parseInt( c_w / 2 - center_w / 2 ) + 'px' );
+
+}
+
+function shuffle(o){ //v1.0
+    for(var j, x, i = o.length; i; j = parseInt(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
+    return o;
+};
+
+$('#links a').click(function(){
+	setTimeout(function(){ init(); }, 100);
+});
+
+function flashdiv( div, timer ){
+	var bg = $(div).css('backgroundColor');
+	setTimeout( function(){ $(div).css('backgroundColor','#ccc'); }, parseInt( timer / 2 ) );
+	setTimeout(	function(){ $(div).css('backgroundColor',bg) }, timer );
+}
+
+init();
+placedivs();
+
+/* chrono */
+
+var startValue = 0; //Number of milliseconds
+var time = 0;
+var interv;
+
+$(function(){
+    displayTime();
+    $(".start").on("click", function(){
+		interv = setInterval(function(){
+			time = time + 1;
+			displayTime();
+		}, 1000);
+		$(".start").css('color', '#faa');
+		return false;
+    });
+    $(".stop").on("click", function(){
+        clearInterval(interv);
+        displayTime();
+		$(".start").css('color', '#fff');
+		return false;
+    });
+    $(".pause").on("click", function(){
+        clearInterval(interv);
+		return false;
+    });
+    $(".reset").on("click", function(){
+        time = 0;
+        displayTime();
+		$(".start").css('color', '#fff');
+		return false;
+    });
+});
+
+function displayTime( ){
+    $(".time").text(fillZeroes(time));
+}
+
+function fillZeroes(t){
+    t = t+"";
+    if(t.length==1)
+        return "0" + t;
+    else
+        return t;
+}
+</script>
+
+
+
+
+
+</body>
